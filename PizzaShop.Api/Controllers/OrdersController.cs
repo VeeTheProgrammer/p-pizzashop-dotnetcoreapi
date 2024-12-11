@@ -2,7 +2,7 @@
 
 namespace PizzaShop.Api.Controllers
 {
-    public class OrderController : Controller
+    public class OrdersController : Controller
     {
         public IActionResult Index()
         {

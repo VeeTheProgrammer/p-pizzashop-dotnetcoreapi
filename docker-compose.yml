@@ -1,0 +1,40 @@
+services:
+  pizzashop_api:
+    container_name: pizzashop_api
+    build: 
+      context: ./PizzaShop.Api
+      dockerfile: Dockerfile
+      args:
+        - configuration=Release
+    ports:
+      - "8080:8080"
+    #environment:
+      #- ASPNETCORE__ENVIRONMENT=${ENVIRONMENT}
+      #- AppSettings__ConnectionStrings__PizzaShopApiDb=Server=${SQL_SERVER};Database=${SQL_DATABASE};Username=${SQL_USER};Password=${SQL_PASSWORD};Trusted_Connection=False;Encrypt=False;
+    depends_on:
+      - pizzashop_postgresql
+    networks:
+      - pizzashop_postgresql_network
+
+  pizzashop_postgresql:
+    image: postgres:17
+    container_name: pizzashop_postgresql
+    environment:
+      POSTGRES_USER: admin #${SQL_USER}
+      POSTGRES_PASSWORD: mylocalpassword #${SQL_PASSWORD}
+      POSTGRES_DB: pizza_shop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql@17/data
+      - ./db/init/:/docker-entrypoint-initdb.d/
+      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
+    networks:
+      - pizzashop_postgresql_network
+
+volumes:
+  postgres_data:
+
+networks:
+  pizzashop_postgresql_network:
+    driver: bridge
